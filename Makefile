@@ -8,16 +8,16 @@ build:	## Build project with compose
 
 .PHONY: up
 up:	## Run project with compose
-	docker-compose up --remove-orphans
+	docker-compose up -d
 
 .PHONY: clean
-## docker-cp,[pse down - v --remove-orphanse
+## docker-compose down - v --remove-orphanse
 ## docker-compose rm -f
 ## docker volume rm fastapi_postgres_data
 
 clean: ## Clean Reset project containers and volumes with compose
 	docker-compose down -v
-	
+
 .PHONY: migrate-apply
 migrate-apply: ## apply alembic migrations to database/schema
 	docker-compose run --rm app alembic upgrade head
@@ -53,9 +53,16 @@ slim-build: ## with power of docker-slim build smaller and safer images
 
 .PHONY: feed_db
 feed_db: ## create database objects and insert data
-	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_work.sql | true
-	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_chapter.sql | true
-	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_wordform.sql | true
-	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_character.sql | true
-	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_paragraph.sql | true
+	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_work.sql
+	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_chapter.sql
+	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_wordform.sql
+	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_character.sql
+	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_paragraph.sql
 	docker-compose exec db psql devdb user -f /home/gx/code/shakespeare_character_work.sql
+
+.PHONY: first
+first: ## clean > up > migrate > feed
+	make clean
+	make up
+	make migrate-apply
+	make feed_db
