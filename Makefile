@@ -11,11 +11,13 @@ up:	## Run project with compose
 	docker-compose up --remove-orphans
 
 .PHONY: clean
-clean: ## Clean Reset project containers and volumes with compose
-	docker-compose down -v --remove-orphans | true
-	docker-compose rm -f | true
-	docker volume rm fastapi_postgres_data | true
+## docker-cp,[pse down - v --remove-orphanse
+## docker-compose rm -f
+## docker volume rm fastapi_postgres_data
 
+clean: ## Clean Reset project containers and volumes with compose
+	docker-compose down -v
+	
 .PHONY: migrate-apply
 migrate-apply: ## apply alembic migrations to database/schema
 	docker-compose run --rm app alembic upgrade head
